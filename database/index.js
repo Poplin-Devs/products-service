@@ -49,7 +49,7 @@ const productSchema = new mongoose.Schema({
 
 let Product = mongoose.model('Product', productSchema);
 
-let get = (page = 1, count = 5) => {
+let getProducts = (page = 1, count = 5) => {
 
   let startingId = (page * 5) - 5;
   if (count > 5) {
@@ -59,17 +59,31 @@ let get = (page = 1, count = 5) => {
     count = 1;
   }
 
-  return Product.find({id: {$gt: startingId}}).limit(count)
+  return Product.find({id: {$gt: startingId}}).limit(count).select({id:1, name:1, slogan:1, description:1, category:1}).lean()
   .then(product => {
     return product;
   });
 }
 
-let getById = (id) => {
-  return Product.findOne({id: id})
+let getProductInfo = (id) => {
+  return Product.findOne({id: id}).select({id:1, name: 1, slogan: 1, description: 1, category: 1, features: 1}).lean()
   .then(product => {
     return product;
   })
 }
 
-module.exports = { get, getById };
+let getProductStyles = (id) => {
+  return Product.findOne({id: id}).select({id: 1, styles: 1}).lean()
+  .then(product => {
+    return product;
+  })
+}
+
+let getProductRelated = (id) => {
+  return Product.findOne({id: id}).select({relatedProducts: 1}).lean()
+  .then(product => {
+    return product;
+  })
+}
+
+module.exports = { getProducts, getProductInfo, getProductStyles, getProductRelated };

@@ -1,5 +1,5 @@
 const express = require('express')
-const { get, getById } = require('../database');
+const { getProducts, getProductInfo, getProductStyles, getProductRelated } = require('../database');
 
 
 const app = express()
@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/products', (req, res) => {
-  return get(req.query.page, req.query.count)
+  return getProducts(req.query.page, req.query.count)
   .then(product => {
     res.send(product);
   })
@@ -21,7 +21,7 @@ app.get('/products', (req, res) => {
 
 app.get('/products/:product_id', (req, res) => {
   let id = req.params.product_id
-  return getById(id)
+  return getProductInfo(id)
   .then(product => {
     res.send(product);
   })
@@ -29,15 +29,15 @@ app.get('/products/:product_id', (req, res) => {
 
 app.get('/products/:product_id/styles', (req, res) => {
   let id = req.params.product_id
-  return getById(id)
+  return getProductStyles(id)
   .then(product => {
-    res.send(product.styles);
+    res.send(product);
   })
 });
 
 app.get('/products/:product_id/related', (req, res) => {
   let id = req.params.product_id
-  return getById(id)
+  return getProductRelated(id)
   .then(product => {
     res.send(product.relatedProducts);
   })
