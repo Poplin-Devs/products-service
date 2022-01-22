@@ -17,6 +17,9 @@ app.get('/products', (req, res) => {
   .then(product => {
     res.send(product);
   })
+  .catch(err => {
+    res.status(500).send(err);
+  })
 });
 
 app.get('/products/:product_id', (req, res) => {
@@ -24,6 +27,9 @@ app.get('/products/:product_id', (req, res) => {
   return getProductInfo(id)
   .then(product => {
     res.send(product);
+  })
+  .catch(err => {
+    res.status(500).send(err);
   })
 });
 
@@ -33,6 +39,9 @@ app.get('/products/:product_id/styles', (req, res) => {
   .then(product => {
     res.send(product);
   })
+  .catch(err => {
+    res.status(500).send(err);
+  })
 });
 
 app.get('/products/:product_id/related', (req, res) => {
@@ -40,6 +49,9 @@ app.get('/products/:product_id/related', (req, res) => {
   return getProductRelated(id)
   .then(product => {
     res.send(product.relatedProducts);
+  })
+  .catch(err => {
+    res.status(500).send(err);
   })
 });
 

@@ -1,5 +1,5 @@
 const app = require('./app.js');
-const port = 3000;
+const port = process.env.EXPRESS_PORT || 3000;
 
 
 

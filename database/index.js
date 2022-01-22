@@ -1,7 +1,8 @@
-const { mongoUri } = require('../config.js');
+// const { mongoUri } = require('../config.js');
 const mongoose = require('mongoose');
 
-mongoose.connect(mongoUri, () => {
+let connectionString = process.env.MONGODB_ENV_CONNECTIONSTRING || 'mongodb://localhost:27017/SDC';
+mongoose.connect(connectionString, () => {
   console.log('Mongoose connected to MongoDB on port 27017');
 });
 
