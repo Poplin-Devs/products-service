@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  products-service:
+    image: leonardodeutsch/products-service
+    environment:
+      EXPRESS_PORT: 3000
+      MONGODB_ENV_CONNECTIONSTRING: mongodb://<username>:<password>@<HOST IP>/<DB Name>
+    ports:
+      - 3000:3000
