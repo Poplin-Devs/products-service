@@ -1,7 +1,7 @@
 # SDC
 
 ## What is it?
-A complete system design for a ecommerce website product's microservice. Includes a server which interacts with the client's HTTP requests as well as the database through an ORM and TCP/UDP requests. Initially designed to replace the website's original backend architecture, SDC had to outperform the old API in terms of speed, performance, and stability while serving more than 50 million data entries.
+A complete, scalable system design for a ecommerce website product's microservice. Includes a server which interacts with the client's HTTP requests as well as the database through an ORM and TCP/UDP requests. Initially designed to replace the website's original backend architecture, SDC had to outperform the old API in terms of speed, performance, and stability while serving more than 50 million data entries.
 
 ## API Documentation
 
@@ -81,6 +81,25 @@ Returns the id's of products related to the product specified.
   </tr>
 </table>
 
+## System Architecture
+
+#### Local Setup
+
+![LocalSetup](https://live.staticflickr.com/65535/51887733344_d503ec096e_z.jpg)
+
+#### Cloud Setup
+
+![CloudSetup](https://live.staticflickr.com/65535/51887486843_72004ca497_b.jpg)
+
+#### Cloud Setup w/ Dockerized Server
+
+![CloudSetupDockerServer](https://live.staticflickr.com/65535/51886442637_483a419f86_b.jpg)
+
+#### Scaled Cloud Setup w/ Dockerized Server & DB
+
+![CloudSetupDockerServerDB](https://live.staticflickr.com/65535/51887486853_61163890b9_b.jpg)
+
+
 ## Development Process
 
 ### Phase 1: Creating the database
@@ -115,6 +134,30 @@ The microservice was tested locally at first, before deployment, to iron out any
 After deploying the server and the database into an AWS EC2 T2.Micro instance, I used Loader.io to stress test it. I was struggling to break the 200 RPS which seemed extremely low and decided to go back and find possible server and query optimization. The server was as lightweight as it could be and I didn't find any changes that could have improved performance, however, the ORM queries could use some work. There were a couple of methods that were quintessential in the optimization process. 
 
 The first one was .lean(), which makes Mongoose return regular objects instead of Mongoose documents (which have added functionality and therefore are much bigger in size). The second method was .select(). Even though I optimized the database to return everything I could ever need in a single query, not every request needed every piece of information, and I was filtering out the unnecessary information in the server, before sending it to the client. The better way to do it is to filter as part of your query, using .select(). The RPS drastically increased after these 2 changes, and for comparison, testing locally allowed 600+ RPS at low latencies compared to having errors and dropped requests before.
+
+#### 130 RPS: Pre-Optimization
+
+![130RPS](https://live.staticflickr.com/65535/51888044800_6630e4b3be_b.jpg)
+
+#### 200 RPS: Post-Optimization
+
+![200RPS](https://live.staticflickr.com/65535/51887387481_9c90887804_c.jpg)
+
+#### 550 RPS
+
+![550RPS](https://live.staticflickr.com/65535/51888044795_e5f8dc39f5_c.jpg)
+
+#### 650 RPS
+
+![650RPS](https://live.staticflickr.com/65535/51887717154_398886738f_b.jpg)
+
+#### 750RPS (Bottlenecked by EC2 instance processing power)
+
+![750RPS](https://live.staticflickr.com/65535/51888044765_4beee14265_c.jpg)
+
+#### Phase 5: Dockerizing and preparing to scale
+
+After finding the maximum RPS achievable using two EC2 instances (one for the server and one for the DB), the next step was to scale the service. I decided to dockerize the server and deploy it in two different EC2 instances which were both communicated to the same EC2 database instance, which was also dockerized using the base MongoDB image and a docker volume to hold the collection. Because I could not have more than one instance of Loader.io running as a free user, I had to use NGINX as a load balancer on another EC2 instance and target that instance with my Loader.io requests. NGINX would redirect the requests through round-robin to the two server instances.
 
 
 
